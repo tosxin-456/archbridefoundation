@@ -9,9 +9,9 @@ import {
   Tag,
   ChevronLeft,
   ChevronRight,
-  Filter
+  Filter,
+  X
 } from "lucide-react";
-import { GoogleLogin } from "@react-oauth/google";
 import SignInWithGoogle from "../../components/GoogleSignIn";
 
 const NewsPage = () => {
@@ -25,6 +25,7 @@ const NewsPage = () => {
   const [selectedArticle, setSelectedArticle] = useState(null);
   const [comments, setComments] = useState({});
   const [newComment, setNewComment] = useState("");
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
 
   const articlesPerPage = 6;
   const categories = [
@@ -231,8 +232,6 @@ const NewsPage = () => {
     currentPage * articlesPerPage
   );
 
-  const totalPages = Math.ceil(filteredArticles.length / articlesPerPage);
-
   const LoginModal = () => {
     const modalRef = useRef(null);
 
@@ -279,90 +278,139 @@ const NewsPage = () => {
     );
   };
 
-  const ArticleModal = ({ article, onClose }) => (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="p-6">
-          <div className="flex justify-between items-start mb-4">
-            <h2 className="text-2xl font-bold text-gray-900 pr-4">
-              {article.title}
-            </h2>
-            <button
-              onClick={onClose}
-              className="text-gray-500 hover:text-gray-700 text-xl"
-            >
-              ×
-            </button>
-          </div>
+  const totalPages = Math.ceil(filteredArticles.length / articlesPerPage);
 
+  const MobileFilters = () => (
+    <div
+      className={`fixed inset-0 bg-black bg-opacity-50 z-40 transition-opacity ${
+        showMobileFilters ? "opacity-100" : "opacity-0 pointer-events-none"
+      }`}
+    >
+      <div
+        className={`fixed bottom-0 left-0 right-0 bg-white rounded-t-xl p-4 transform transition-transform ${
+          showMobileFilters ? "translate-y-0" : "translate-y-full"
+        }`}
+      >
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-lg font-semibold">Filter by Category</h3>
+          <button
+            onClick={() => setShowMobileFilters(false)}
+            className="p-2 hover:bg-gray-100 rounded-lg"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        <div className="grid grid-cols-2 gap-2">
+          {categories.map((category) => (
+            <button
+              key={category}
+              onClick={() => {
+                setSelectedCategory(category);
+                setShowMobileFilters(false);
+              }}
+              className={`p-3 rounded-lg text-sm font-medium transition-colors ${
+                selectedCategory === category
+                  ? "bg-blue-600 text-white"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+              }`}
+            >
+              {category}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
+  const ArticleModal = ({ article, onClose }) => (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-end sm:items-center justify-center z-50">
+      <div className="bg-white w-full h-full sm:h-auto sm:rounded-lg sm:max-w-4xl sm:max-h-[90vh] overflow-y-auto">
+        <div className="sticky top-0 bg-white border-b p-4 flex justify-between items-center">
+          <h2 className="text-lg sm:text-xl font-bold text-gray-900 pr-4 line-clamp-2">
+            {article.title}
+          </h2>
+          <button
+            onClick={onClose}
+            className="p-2 hover:bg-gray-100 rounded-lg flex-shrink-0"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        <div className="p-4 sm:p-6">
           <img
             src={article.image}
             alt={article.title}
-            className="w-full h-64 object-cover rounded-lg mb-6"
+            className="w-full h-48 sm:h-64 object-cover rounded-lg mb-4 sm:mb-6"
           />
 
-          <div className="flex items-center gap-4 text-sm text-gray-600 mb-6">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs sm:text-sm text-gray-600 mb-4 sm:mb-6">
             <div className="flex items-center gap-1">
-              <User className="w-4 h-4" />
+              <User className="w-3 h-3 sm:w-4 sm:h-4" />
               <span>{article.author}</span>
             </div>
             <div className="flex items-center gap-1">
-              <Calendar className="w-4 h-4" />
+              <Calendar className="w-3 h-3 sm:w-4 sm:h-4" />
               <span>{article.date}</span>
             </div>
-            <div className="flex items-center gap-1">
-              <Tag className="w-4 h-4" />
-              <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs">
-                {article.category}
-              </span>
-            </div>
+            <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs">
+              {article.category}
+            </span>
           </div>
 
-          <div className="prose max-w-none mb-6">
+          <div className="prose max-w-none mb-4 sm:mb-6">
             {article.content.split("\n\n").map((paragraph, index) => (
-              <p key={index} className="mb-4 text-gray-700 leading-relaxed">
+              <p
+                key={index}
+                className="mb-3 sm:mb-4 text-gray-700 leading-relaxed text-sm sm:text-base"
+              >
                 {paragraph}
               </p>
             ))}
           </div>
 
-          <div className="flex gap-2 mb-6">
+          <div className="flex flex-wrap gap-2 mb-4 sm:mb-6">
             {article.tags.map((tag) => (
               <span
                 key={tag}
-                className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm"
+                className="px-2 sm:px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-xs sm:text-sm"
               >
                 #{tag}
               </span>
             ))}
           </div>
 
-          <div className="flex items-center gap-4 pb-6 border-b">
+          <div className="flex items-center gap-2 sm:gap-4 pb-4 sm:pb-6 border-b">
             <button
               onClick={() => handleLike(article.id)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
+              className={`flex items-center gap-1 sm:gap-2 px-3 sm:px-4 py-2 rounded-lg transition-colors text-sm ${
                 article.isLiked
                   ? "bg-red-100 text-red-600"
                   : "bg-gray-100 text-gray-600 hover:bg-gray-200"
               }`}
             >
               <Heart
-                className={`w-5 h-5 ${article.isLiked ? "fill-current" : ""}`}
+                className={`w-4 h-4 sm:w-5 sm:h-5 ${
+                  article.isLiked ? "fill-current" : ""
+                }`}
               />
               <span>{article.likes}</span>
             </button>
-            <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors">
-              <MessageCircle className="w-5 h-5" />
+            <button className="flex items-center gap-1 sm:gap-2 px-3 sm:px-4 py-2 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors text-sm">
+              <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5" />
               <span>{comments[article.id]?.length || 0}</span>
             </button>
-            <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors">
-              <Share2 className="w-5 h-5" />
-              <span>Share</span>
+            <button className="flex items-center gap-1 sm:gap-2 px-3 sm:px-4 py-2 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors text-sm">
+              <Share2 className="w-4 h-4 sm:w-5 sm:h-5" />
+              <span className="hidden sm:inline">Share</span>
             </button>
           </div>
 
-          <div className="mt-6">
-            <h4 className="text-lg font-semibold mb-4">Comments</h4>
+          <div className="mt-4 sm:mt-6">
+            <h4 className="text-base sm:text-lg font-semibold mb-4">
+              Comments
+            </h4>
 
             <div className="mb-4">
               <textarea
@@ -372,30 +420,35 @@ const NewsPage = () => {
                   isLoggedIn ? "Write a comment..." : "Please log in to comment"
                 }
                 disabled={!isLoggedIn}
-                className="w-full p-3 border rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full p-3 border rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
                 rows={3}
               />
               <button
                 onClick={() => handleComment(article.id)}
                 disabled={!isLoggedIn || !newComment.trim()}
-                className="mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                className="mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors text-sm sm:text-base"
               >
                 Post Comment
               </button>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               {comments[article.id]?.map((comment) => (
-                <div key={comment.id} className="bg-gray-50 p-4 rounded-lg">
+                <div
+                  key={comment.id}
+                  className="bg-gray-50 p-3 sm:p-4 rounded-lg"
+                >
                   <div className="flex items-center gap-2 mb-2">
-                    <span className="font-medium text-gray-900">
+                    <span className="font-medium text-gray-900 text-sm sm:text-base">
                       {comment.author}
                     </span>
-                    <span className="text-sm text-gray-500">
+                    <span className="text-xs sm:text-sm text-gray-500">
                       {comment.date}
                     </span>
                   </div>
-                  <p className="text-gray-700">{comment.content}</p>
+                  <p className="text-gray-700 text-sm sm:text-base">
+                    {comment.content}
+                  </p>
                 </div>
               ))}
             </div>
@@ -407,34 +460,55 @@ const NewsPage = () => {
 
   return (
     <div
-      className="min-h-screen mt-[70px] "
+      className="min-h-screen pt-16 sm:pt-20"
       style={{ backgroundColor: "#020202" }}
     >
       {/* Header */}
-      <header className="py-8 px-4">
+      <header className="py-6 sm:py-8 px-4">
         <div className="max-w-6xl mx-auto">
-          <h1 className="text-4xl font-bold text-white mb-2">News & Updates</h1>
-          <p className="text-gray-300">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-2">
+            News & Updates
+          </h1>
+          <p className="text-sm sm:text-base text-gray-300">
             Stay updated with our latest announcements and insights
           </p>
         </div>
       </header>
 
       {/* Search and Filter Section */}
-      <div className="px-4 mb-8">
+      <div className="px-4 mb-6 sm:mb-8">
         <div className="max-w-6xl mx-auto">
-          <div className="flex flex-col md:flex-row gap-4 mb-6">
-            <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+          <div className="flex flex-col gap-3 sm:gap-4 mb-4 sm:mb-6">
+            {/* Search Bar */}
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 sm:w-5 sm:h-5" />
               <input
                 type="text"
                 placeholder="Search articles..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 bg-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full pl-10 pr-4 py-3 bg-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
               />
             </div>
-            <div className="flex items-center gap-2">
+
+            {/* Mobile Filter Button */}
+            <div className="flex items-center justify-between sm:hidden">
+              <button
+                onClick={() => setShowMobileFilters(true)}
+                className="flex items-center gap-2 px-4 py-2 bg-gray-700 text-white rounded-lg"
+              >
+                <Filter className="w-4 h-4" />
+                <span>Filter</span>
+              </button>
+
+              <span className="text-gray-400 text-sm">
+                {selectedCategory !== "All" &&
+                  `Filtered by: ${selectedCategory}`}
+              </span>
+            </div>
+
+            {/* Desktop Filter Dropdown */}
+            <div className="hidden sm:flex items-center gap-2">
               <Filter className="text-gray-400 w-5 h-5" />
               <select
                 value={selectedCategory}
@@ -451,13 +525,13 @@ const NewsPage = () => {
             </div>
           </div>
 
-          {/* Category Tags */}
-          <div className="flex flex-wrap gap-2 mb-8">
+          {/* Desktop Category Tags */}
+          <div className="hidden sm:flex flex-wrap gap-2 mb-8">
             {categories.map((category) => (
               <button
                 key={category}
                 onClick={() => setSelectedCategory(category)}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                className={`px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-colors ${
                   selectedCategory === category
                     ? "text-white"
                     : "bg-gray-700 text-gray-300 hover:bg-gray-600"
@@ -475,9 +549,9 @@ const NewsPage = () => {
       </div>
 
       {/* Articles Grid */}
-      <div className="px-4 mb-12">
+      <div className="px-4 mb-8 sm:mb-12">
         <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
             {paginatedArticles.map((article) => (
               <article
                 key={article.id}
@@ -487,33 +561,33 @@ const NewsPage = () => {
                 <img
                   src={article.image}
                   alt={article.title}
-                  className="w-full h-48 object-cover"
+                  className="w-full h-40 sm:h-48 object-cover"
                 />
-                <div className="p-6">
+                <div className="p-4 sm:p-6">
                   <div className="flex items-center gap-2 mb-3">
                     <span
-                      className="px-3 py-1 rounded-full text-xs font-medium text-white"
+                      className="px-2 sm:px-3 py-1 rounded-full text-xs font-medium text-white"
                       style={{ backgroundColor: "#286374" }}
                     >
                       {article.category}
                     </span>
-                    <span className="text-sm text-gray-500">
+                    <span className="text-xs sm:text-sm text-gray-500">
                       {article.date}
                     </span>
                   </div>
 
-                  <h2 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2">
+                  <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-3 line-clamp-2">
                     {article.title}
                   </h2>
 
-                  <p className="text-gray-600 mb-4 line-clamp-3">
+                  <p className="text-sm sm:text-base text-gray-600 mb-4 line-clamp-3">
                     {article.excerpt}
                   </p>
 
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1 text-sm text-gray-500">
-                      <User className="w-4 h-4" />
-                      <span>{article.author}</span>
+                    <div className="flex items-center gap-1 text-xs sm:text-sm text-gray-500">
+                      <User className="w-3 h-3 sm:w-4 sm:h-4" />
+                      <span className="truncate">{article.author}</span>
                     </div>
 
                     <div className="flex items-center gap-3">
@@ -522,22 +596,22 @@ const NewsPage = () => {
                           e.stopPropagation();
                           handleLike(article.id);
                         }}
-                        className={`flex items-center gap-1 text-sm transition-colors ${
+                        className={`flex items-center gap-1 text-xs sm:text-sm transition-colors ${
                           article.isLiked
                             ? "text-red-600"
                             : "text-gray-500 hover:text-red-600"
                         }`}
                       >
                         <Heart
-                          className={`w-4 h-4 ${
+                          className={`w-3 h-3 sm:w-4 sm:h-4 ${
                             article.isLiked ? "fill-current" : ""
                           }`}
                         />
                         <span>{article.likes}</span>
                       </button>
 
-                      <div className="flex items-center gap-1 text-sm text-gray-500">
-                        <MessageCircle className="w-4 h-4" />
+                      <div className="flex items-center gap-1 text-xs sm:text-sm text-gray-500">
+                        <MessageCircle className="w-3 h-3 sm:w-4 sm:h-4" />
                         <span>{comments[article.id]?.length || 0}</span>
                       </div>
                     </div>
@@ -551,47 +625,77 @@ const NewsPage = () => {
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="px-4 mb-12">
-          <div className="max-w-6xl mx-auto flex justify-center items-center gap-2">
-            <button
-              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-              disabled={currentPage === 1}
-              className="flex items-center gap-2 px-4 py-2 bg-white rounded-lg text-gray-700 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              <ChevronLeft className="w-4 h-4" />
-              Previous
-            </button>
+        <div className="px-4 mb-8 sm:mb-12">
+          <div className="max-w-6xl mx-auto">
+            {/* Mobile Pagination */}
+            <div className="flex sm:hidden justify-between items-center">
+              <button
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className="flex items-center gap-2 px-4 py-2 bg-white rounded-lg text-gray-700 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
+              >
+                <ChevronLeft className="w-4 h-4" />
+                Previous
+              </button>
 
-            <div className="flex gap-1">
-              {[...Array(totalPages)].map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => setCurrentPage(index + 1)}
-                  className={`px-4 py-2 rounded-lg transition-colors ${
-                    currentPage === index + 1
-                      ? "text-white"
-                      : "bg-white text-gray-700 hover:bg-gray-100"
-                  }`}
-                  style={{
-                    backgroundColor:
-                      currentPage === index + 1 ? "#286374" : undefined
-                  }}
-                >
-                  {index + 1}
-                </button>
-              ))}
+              <span className="text-white text-sm">
+                {currentPage} of {totalPages}
+              </span>
+
+              <button
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                }
+                disabled={currentPage === totalPages}
+                className="flex items-center gap-2 px-4 py-2 bg-white rounded-lg text-gray-700 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
+              >
+                Next
+                <ChevronRight className="w-4 h-4" />
+              </button>
             </div>
 
-            <button
-              onClick={() =>
-                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-              }
-              disabled={currentPage === totalPages}
-              className="flex items-center gap-2 px-4 py-2 bg-white rounded-lg text-gray-700 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              Next
-              <ChevronRight className="w-4 h-4" />
-            </button>
+            {/* Desktop Pagination */}
+            <div className="hidden sm:flex justify-center items-center gap-2">
+              <button
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className="flex items-center gap-2 px-4 py-2 bg-white rounded-lg text-gray-700 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                <ChevronLeft className="w-4 h-4" />
+                Previous
+              </button>
+
+              <div className="flex gap-1">
+                {[...Array(totalPages)].map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setCurrentPage(index + 1)}
+                    className={`px-4 py-2 rounded-lg transition-colors ${
+                      currentPage === index + 1
+                        ? "text-white"
+                        : "bg-white text-gray-700 hover:bg-gray-100"
+                    }`}
+                    style={{
+                      backgroundColor:
+                        currentPage === index + 1 ? "#286374" : undefined
+                    }}
+                  >
+                    {index + 1}
+                  </button>
+                ))}
+              </div>
+
+              <button
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                }
+                disabled={currentPage === totalPages}
+                className="flex items-center gap-2 px-4 py-2 bg-white rounded-lg text-gray-700 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                Next
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -600,18 +704,22 @@ const NewsPage = () => {
       <div className="px-4 mb-8">
         <div className="max-w-6xl mx-auto text-center">
           {isLoggedIn ? (
-            <div className="flex items-center justify-center gap-2 text-green-400">
-              <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-              <span>Logged in as Current User</span>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-2 text-green-400">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                <span className="text-sm sm:text-base">
+                  Logged in as Current User
+                </span>
+              </div>
               <button
                 onClick={() => setIsLoggedIn(false)}
-                className="ml-4 px-3 py-1 bg-gray-700 text-gray-300 rounded hover:bg-gray-600 transition-colors"
+                className="px-3 py-1 bg-gray-700 text-gray-300 rounded hover:bg-gray-600 transition-colors text-sm"
               >
                 Logout
               </button>
             </div>
           ) : (
-            <div className="text-gray-400">
+            <div className="text-gray-400 text-sm sm:text-base">
               <span>Not logged in - </span>
               <button
                 onClick={() => setShowLoginModal(true)}
@@ -632,6 +740,7 @@ const NewsPage = () => {
           onClose={() => setSelectedArticle(null)}
         />
       )}
+      <MobileFilters />
     </div>
   );
 };

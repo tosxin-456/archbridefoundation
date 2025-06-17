@@ -81,6 +81,19 @@ const LoadingSpinner = () => (
 export default function SignInWithGoogle() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isEmailFocused, setIsEmailFocused] = useState(false);
+  const [email, setEmail] = useState("");
+
+
+  const handleEmailSubmit = (e) => {
+    if (e) e.preventDefault();
+    if (!email) return;
+    setIsLoading(true);
+    setTimeout(() => {
+      setIsLoading(false);
+      setError("Demo email login completed");
+    }, 1500);
+  };
 
   const clearError = () => setError("");
 
@@ -118,52 +131,100 @@ export default function SignInWithGoogle() {
   });
 
   return (
-    <div className="w-full max-w-md mx-auto">
+    <div className="w-full max-w-sm mx-auto">
       <ErrorToast error={error} onClose={clearError} />
 
-      <div className="space-y-6">
+      <div className="space-y-5">
+        {/* Google Login Button */}
         <button
           onClick={login}
           disabled={isLoading}
-          className="w-full group relative flex items-center justify-center gap-3 bg-white border border-gray-300 text-[#0A3549] rounded-lg px-6 py-3.5 font-medium shadow-sm hover:shadow-md hover:border-gray-400 hover:bg-gray-50 active:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[#0A3549] focus:ring-offset-2 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:shadow-sm disabled:hover:border-gray-300 disabled:hover:bg-white"
+          className="w-full group relative flex items-center justify-center gap-2.5 bg-white border border-gray-200 text-gray-700 rounded-xl px-5 py-3 font-medium text-sm shadow-sm hover:shadow-md hover:border-gray-300 hover:bg-gray-50/50 active:bg-gray-100 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:ring-offset-1 transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-sm disabled:hover:border-gray-200 disabled:hover:bg-white disabled:active:scale-100"
         >
           {isLoading ? (
             <>
               <LoadingSpinner />
-              <span className="text-[#0A3549] font-medium">Signing in...</span>
+              <span className="text-gray-600">Signing in...</span>
             </>
           ) : (
             <>
               <GoogleIcon />
-              <span className="text-[#0A3549] font-medium group-hover:text-[#0A3549]/90 transition-colors duration-200">
+              <span className="text-gray-700 group-hover:text-gray-800 transition-colors duration-150">
                 Continue with Google
               </span>
             </>
           )}
         </button>
 
-        <div className="relative">
+        {/* Divider */}
+        <div className="relative py-2">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-gray-200"></div>
+            <div className="w-full border-t border-gray-100"></div>
           </div>
-          <div className="relative flex justify-center text-sm">
-            <span className="px-4 bg-white text-gray-500">or</span>
+          <div className="relative flex justify-center text-xs">
+            <span className="px-3 bg-white text-gray-400 font-medium">or</span>
           </div>
         </div>
 
-        <div className="text-center">
-          <p className="text-xs text-gray-500 leading-relaxed">
+        {/* Email Section */}
+        <div className="space-y-4">
+          <div className="relative">
+            <label
+              htmlFor="email"
+              className={`absolute left-3 transition-all duration-200 pointer-events-none ${
+                isEmailFocused || email
+                  ? "top-2 text-xs text-blue-600 font-medium"
+                  : "top-1/2 -translate-y-1/2 text-sm text-gray-500"
+              }`}
+            >
+              Email address
+            </label>
+            <input
+              type="email"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              onFocus={() => setIsEmailFocused(true)}
+              onBlur={() => setIsEmailFocused(false)}
+              onKeyDown={(e) => e.key === "Enter" && handleEmailSubmit(e)}
+              className={`w-full rounded-xl border bg-white px-3 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-1 ${
+                isEmailFocused || email
+                  ? "pt-6 pb-2 border-blue-300 focus:border-blue-500 focus:ring-blue-500/20"
+                  : "py-3 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20"
+              }`}
+            />
+          </div>
+
+          <button
+            onClick={handleEmailSubmit}
+            disabled={!email || isLoading}
+            className="w-full bg-blue-600 text-white rounded-xl px-5 py-3 font-medium text-sm shadow-sm hover:bg-blue-700 hover:shadow-md active:bg-blue-800 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:ring-offset-1 transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-600 disabled:hover:shadow-sm disabled:active:scale-100"
+          >
+            {isLoading ? (
+              <div className="flex items-center justify-center gap-2">
+                <LoadingSpinner />
+                <span>Sending...</span>
+              </div>
+            ) : (
+              "Continue with Email"
+            )}
+          </button>
+        </div>
+
+        {/* Terms */}
+        <div className="pt-2">
+          <p className="text-xs text-gray-400 leading-relaxed text-center">
             By continuing, you agree to our{" "}
             <a
               href="#"
-              className="text-[#0A3549] hover:text-[#0A3549]/80 font-medium underline underline-offset-2"
+              className="text-gray-600 hover:text-gray-800 font-medium transition-colors duration-150"
             >
               Terms of Service
             </a>{" "}
             and{" "}
             <a
               href="#"
-              className="text-[#0A3549] hover:text-[#0A3549]/80 font-medium underline underline-offset-2"
+              className="text-gray-600 hover:text-gray-800 font-medium transition-colors duration-150"
             >
               Privacy Policy
             </a>

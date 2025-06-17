@@ -44,7 +44,7 @@ const Navbar = () => {
                 <img src={logo} className="w-full " alt="" />
               </div>
               <h1 className="text-xl sm:text-2xl font-bold text-[#020202]">
-                ArchBridge Foundation
+                ArchBridge
               </h1>
             </div>
 
