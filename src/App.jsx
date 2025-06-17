@@ -1,3 +1,4 @@
+import { Analytics } from "@vercel/analytics/react"; // ✅ Correct import (not /next for CRA/Vite/React apps)
 import {
   BrowserRouter as Router,
   Routes,
@@ -15,10 +16,8 @@ import ProgramsProjects from "./pages/programs";
 import ScrollToTopButton from "./components/TopScroll";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 
-// Wrapper to access location inside Router
 const AppContent = () => {
   const location = useLocation();
-
   const showScrollButton = location.pathname !== "/";
 
   return (
@@ -44,9 +43,12 @@ const AppContent = () => {
 
 function App() {
   return (
-    <Router>
-      <AppContent />
-    </Router>
+    <>
+      <Router>
+        <AppContent />
+      </Router>
+      <Analytics /> {/* ✅ Placed here to capture all page views */}
+    </>
   );
 }
 
