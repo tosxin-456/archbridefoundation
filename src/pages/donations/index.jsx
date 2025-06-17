@@ -8,6 +8,7 @@ import {
   Check,
   X
 } from "lucide-react";
+import logo from "../../assets/logo.png";
 
 const DonationModal = ({ isOpen, onClose }) => {
   const [amount, setAmount] = useState("");
@@ -160,8 +161,9 @@ const DonationModal = ({ isOpen, onClose }) => {
         {/* Header */}
         <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 rounded-t-2xl flex items-center justify-between z-10">
           <div className="flex items-center">
-            <div className="inline-flex items-center justify-center w-10 h-10 bg-[#0A3549] rounded-full mr-3">
-              <Heart className="w-5 h-5 text-white" />
+            <div className="w-12 h-12 rounded-lg ml-[10px] mr-[10px] flex items-center justify-center">
+              {/* <Heart className="w-6 h-6 text-white" /> */}
+              <img src={logo} className="w-full " alt="" />
             </div>
             <h2 className="text-xl md:text-2xl font-bold text-[#0A3549]">
               Support ArchBridge Foundation
@@ -373,6 +375,5 @@ const DonationModal = ({ isOpen, onClose }) => {
     </div>
   );
 };
-
 
 export default DonationModal;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Search,
   Heart,
@@ -11,6 +11,8 @@ import {
   ChevronRight,
   Filter
 } from "lucide-react";
+import { GoogleLogin } from "@react-oauth/google";
+import SignInWithGoogle from "../../components/GoogleSignIn";
 
 const NewsPage = () => {
   const [articles, setArticles] = useState([]);
@@ -231,33 +233,51 @@ const NewsPage = () => {
 
   const totalPages = Math.ceil(filteredArticles.length / articlesPerPage);
 
-  const LoginModal = () => (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-        <h3 className="text-xl font-bold text-gray-900 mb-4">Login Required</h3>
-        <p className="text-gray-600 mb-6">
-          Please log in to like articles and leave comments.
-        </p>
-        <div className="flex gap-3">
-          <button
-            onClick={() => {
-              setIsLoggedIn(true);
-              setShowLoginModal(false);
-            }}
-            className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            Login
-          </button>
+  const LoginModal = () => {
+    const modalRef = useRef(null);
+
+    // Close modal on outside click
+    const handleClickOutside = (e) => {
+      if (modalRef.current && !modalRef.current.contains(e.target)) {
+        setShowLoginModal(false);
+      }
+    };
+
+    // Attach event listener to handle outside clicks
+    useEffect(() => {
+      document.addEventListener("mousedown", handleClickOutside);
+      return () =>
+        document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div
+          ref={modalRef}
+          className="relative bg-white rounded-lg p-6 max-w-md w-full mx-4"
+        >
+          {/* X Close Button */}
           <button
             onClick={() => setShowLoginModal(false)}
-            className="flex-1 bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400 transition-colors"
+            className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
           >
-            Cancel
+            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <path
+                fillRule="evenodd"
+                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                clipRule="evenodd"
+              />
+            </svg>
           </button>
+
+          <h3 className="text-xl font-bold text-gray-900 mb-4">
+            Login Required
+          </h3>
+          <SignInWithGoogle />
         </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   const ArticleModal = ({ article, onClose }) => (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -386,7 +406,10 @@ const NewsPage = () => {
   );
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "#020202" }}>
+    <div
+      className="min-h-screen mt-[70px] "
+      style={{ backgroundColor: "#020202" }}
+    >
       {/* Header */}
       <header className="py-8 px-4">
         <div className="max-w-6xl mx-auto">

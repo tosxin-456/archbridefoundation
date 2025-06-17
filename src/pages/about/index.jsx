@@ -157,28 +157,24 @@ const AboutUsPage = () => {
       style={{ backgroundColor: "#FEFDFD" }}
     >
       {/* Hero Section */}
-      <section className="relative py-20 px-4 text-center overflow-hidden">
-        <div className="absolute inset-0 opacity-5">
-          <div
-            className="absolute top-20 left-10 w-64 h-64 rounded-full"
-            style={{ backgroundColor: "#10243D" }}
-          ></div>
-          <div
-            className="absolute bottom-20 right-10 w-48 h-48 rounded-full"
-            style={{ backgroundColor: "#10243D" }}
-          ></div>
+      <section className="relative py-24 px-4 text-center overflow-hidden bg-white">
+        {/* Decorative background circles */}
+        <div className="absolute inset-0 pointer-events-none z-0">
+          <div className="absolute top-10 left-10 w-72 h-72 bg-[#10243D] opacity-10 blur-3xl rounded-full"></div>
+          <div className="absolute bottom-10 right-10 w-60 h-60 bg-[#10243D] opacity-10 blur-2xl rounded-full"></div>
         </div>
+
+        {/* Content */}
         <div className="max-w-4xl mx-auto relative z-10">
-          <h1
-            className="text-5xl md:text-5xl font-bold mb-6 animate-fade-in-up"
-            style={{ color: "#10243D" }}
-          >
+          <h1 className="text-4xl sm:text-5xl font-extrabold text-[#10243D] mb-6 animate-fade-in-up">
             About Us
           </h1>
-          <p className="text-xl md:text-2xl text-gray-600 mb-8 animate-fade-in-up animation-delay-200">
+          <p className="text-lg sm:text-xl md:text-2xl text-gray-600 mb-10 animate-fade-in-up animation-delay-200 leading-relaxed">
             Building the future through innovation, dedication, and unwavering
             commitment to excellence.
           </p>
+
+          {/* Scroll Indicator */}
           <div className="animate-bounce mt-12">
             <ChevronDown className="w-8 h-8 mx-auto text-gray-400" />
           </div>

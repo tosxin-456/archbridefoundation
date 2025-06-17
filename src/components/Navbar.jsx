@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Heart, Menu, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import DonationModal from "../pages/donations";
+import logo from '../assets/logo.png'
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -27,7 +28,7 @@ const Navbar = () => {
   return (
     <>
       <nav
-        className={`fixed top-0 w-full z-50 transition-all duration-300 ${
+        className={`fixed top-0 w-full z-50  transition-all duration-300 ${
           scrollY > 50 ? "bg-white shadow-lg" : "bg-white/95 backdrop-blur-md"
         }`}
       >
@@ -38,8 +39,9 @@ const Navbar = () => {
               className="flex items-center space-x-3 cursor-pointer"
               onClick={() => navigate("/")}
             >
-              <div className="w-10 h-10 bg-[#195C70] rounded-lg flex items-center justify-center">
-                <Heart className="w-6 h-6 text-white" />
+              <div className="w-12 h-12 rounded-lg flex items-center justify-center">
+                {/* <Heart className="w-6 h-6 text-white" /> */}
+                <img src={logo} className="w-full " alt="" />
               </div>
               <h1 className="text-xl sm:text-2xl font-bold text-[#020202]">
                 ArchBridge Foundation

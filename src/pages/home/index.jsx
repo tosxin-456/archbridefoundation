@@ -16,10 +16,12 @@ import {
   ChevronRight,
   Star
 } from "lucide-react";
+import DonationModal from "../donations";
 
 const HomePage = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [email, setEmail] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const heroSlides = [
     {
@@ -160,7 +162,10 @@ const HomePage = () => {
                 {heroSlides[currentSlide].subtitle}
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <button className="px-6 sm:px-8 py-3 sm:py-4 bg-[#195C70] text-white rounded-full hover:bg-[#3C6674] transform hover:scale-105 transition-all text-lg font-semibold">
+                <button
+                  onClick={() => setIsModalOpen(true)}
+                  className="px-6 sm:px-8 py-3 sm:py-4 bg-[#195C70] text-white rounded-full hover:bg-[#3C6674] transform hover:scale-105 transition-all text-lg font-semibold"
+                >
                   Donate Now <Heart className="inline w-5 h-5 ml-2" />
                 </button>
                 <button className="px-6 sm:px-8 py-3 sm:py-4 border-2 border-white text-white rounded-full hover:bg-white hover:text-[#195C70] transition-all text-lg font-semibold">
@@ -365,7 +370,10 @@ const HomePage = () => {
             build bridges to brighter futures.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center">
-            <button className="px-6 sm:px-8 py-3 sm:py-4 bg-white text-[#195C70] rounded-full hover:bg-gray-100 transform hover:scale-105 transition-all text-lg font-semibold">
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="px-6 sm:px-8 py-3 sm:py-4 bg-white text-[#195C70] rounded-full hover:bg-gray-100 transform hover:scale-105 transition-all text-lg font-semibold"
+            >
               <Heart className="inline w-5 h-5 mr-2" />
               Donate Now
             </button>
@@ -410,10 +418,18 @@ const HomePage = () => {
           </div>
         </div>
       </div>
+      {/* Donation Modal */}
+      <DonationModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
 
       {/* Floating Donate Button */}
       <div className="fixed bottom-6 sm:bottom-8 right-4 sm:right-8 z-40">
-        <button className="w-12 sm:w-16 h-12 sm:h-16 bg-[#195C70] text-white rounded-full shadow-2xl hover:bg-[#3C6674] transform hover:scale-110 transition-all duration-300 flex items-center justify-center">
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="w-12 sm:w-16 h-12 sm:h-16 bg-[#195C70] text-white rounded-full shadow-2xl hover:bg-[#3C6674] transform hover:scale-110 transition-all duration-300 flex items-center justify-center"
+        >
           <Heart className="w-5 sm:w-6 h-5 sm:h-6" />
         </button>
       </div>
